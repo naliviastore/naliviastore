@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nalivia Store — Moda Feminina</title>
+  <style>
+    :root{
+      --primary:#ec4899; /* Rosa */
+      --bg:#fff0f6;      /* Fundo suave */
+      --card:#ffffff;
+      --muted:#6b7280;
+      --text:#1f2937;
+      --accent:#a855f7;  /* Lilás */
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #fff0f6, #fdf4ff);
+      color:var(--text);
+    }
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(8px);
+      background: rgba(255,255,255,0.8);
+      border-bottom:1px solid rgba(0,0,0,.05);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:14px 16px;}
+    .row{display:flex; align-items:center; gap:14px; justify-content:space-between}
+    .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.2rem}
+    .logo img{height:40px; border-radius:8px}
+    nav a{
+      color:var(--muted); text-decoration:none; margin:0 8px; padding:8px 12px;
+      border-radius:10px;
+    }
+    nav a.active, nav a:hover{background:rgba(236,72,153,.15); color:var(--primary)}
+    main{min-height:70vh}
+    /* Banner */
+    .banner{
+      margin:24px auto; padding:18px; border-radius:16px;
+      background: linear-gradient(135deg, #fbcfe8, #ddd6fe);
+      box-shadow: 0 10px 40px rgba(0,0,0,.15);
+    }
+    .banner h2{margin:0 0 8px 0}
+    .carousel{display:flex; gap:10px; overflow:hidden}
+    .slide{
+      min-width:100%; background:#fff; border:1px solid rgba(0,0,0,.05);
+      border-radius:14px; padding:18px; text-align:center;
+    }
+    /* Busca */
+    .searchBar{display:flex; gap:10px; margin:16px 0}
+    .searchBar input{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+      background:#fff; color:var(--text);
+    }
+    /* Grid produtos */
+    .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px}
+    .card{
+      background: #fff;
+      border:1px solid rgba(0,0,0,.05);
+      border-radius:16px; overflow:hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,.1);
+      display:flex; flex-direction:column;
+    }
+    .card img{width:100%; height:260px; object-fit:cover; background:#f3f4f6}
+    .card .body{padding:12px 14px; display:flex; flex-direction:column; gap:6px}
+    .price{font-weight:800; color:var(--primary)}
+    .buy{margin-top:6px; padding:10px 12px; border-radius:12px; border:0; cursor:pointer;
+      background:linear-gradient(90deg, var(--primary), var(--accent)); color:white; font-weight:700;
+    }
+    /* Admin */
+    .panel{background:#fff; border:1px solid rgba(0,0,0,.1); border-radius:16px; padding:16px; margin:16px 0}
+    .field{display:flex; gap:10px; margin:8px 0}
+    .field input, .field textarea{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.1);
+      background:#fff; color:var(--text);
+    }
+    .btn{
+      padding:10px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:700;
+      background:var(--accent); color:white;
+    }
+    .muted{color:var(--muted); font-size:.92rem}
+    footer{border-top:1px solid rgba(0,0,0,.05); margin-top:30px; background:#fff}
+    .foot{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:16px}
+    /* WhatsApp button */
+    .whatsapp{
+      position: fixed; right:18px; bottom:18px;
+      background:#25D366; color:white; font-weight:800;
+      padding:14px 16px; border-radius:999px; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,.35)
+    }
+    @media (max-width:640px){ .foot{flex-direction:column; align-items:flex-start} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap row">
+      <div class="logo"><img src="logo.jpg" alt="Nalivia Store"> Nalivia Store</div>
+      <nav>
+        <a href="#/loja" id="linkLoja" class="active">Loja</a>
+        <a href="#/admin" id="linkAdmin">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- LOJA -->
+    <section id="lojaSection">
+      <div class="banner">
+        <h2>Novidades em Moda Feminina ✨</h2>
+        <p class="muted">Os vestidos mais lindos, direto da Nalivia Store.</p>
+        <div class="carousel" id="carousel">
+          <div class="slide">Frete grátis em compras acima de R$ 199</div>
+          <div class="slide">Pagamento em até 6x sem juros</div>
+          <div class="slide">Estilo e conforto para todas as ocasiões</div>
+        </div>
+      </div>
+
+      <div class="searchBar">
+        <input id="search" placeholder="Buscar vestidos..." />
+      </div>
+
+      <div class="grid" id="productsGrid"></div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="adminSection" style="display:none;">
+      <div class="panel" id="loginPanel">
+        <h3>Login</h3>
+        <div class="field">
+          <input type="password" id="adminPass" placeholder="Senha de admin" />
+        </div>
+        <button class="btn" id="btnLogin">Entrar</button>
+      </div>
+
+      <div class="panel" id="editorPanel" style="display:none;">
+        <h3>Editor de Produtos (JSON)</h3>
+        <div class="field">
+          <textarea id="jsonArea" rows="12"></textarea>
+        </div>
+        <div class="field" style="gap:8px;">
+          <button class="btn" id="btnAplicar">Aplicar alterações</button>
+          <button class="btn" id="btnBaixar">Baixar products.json</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div>© 2025 Nalivia Store — Moda Feminina.</div>
+      <div class="muted">Site feito em HTML único, moderno e responsivo.</div>
+    </div>
+  </footer>
+
+  <!-- Botão WhatsApp -->
+  <a class="whatsapp" href="https://wa.me/5577981518721?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20quero%20fazer%20um%20pedido" target="_blank">WhatsApp</a>
+
+  <script>
+    // --- Dados iniciais ---
+    let products = [
+      { name: "Vestido Vermelho Elegante", price: "179,90", image: "vestido1.jpg", category:"Vestidos Femininos" },
+      { name: "Vestido Floral Rosa", price: "189,90", image: "vestido2.jpg", category:"Vestidos Femininos" },
+      { name: "Vestido Verde Poá", price: "169,90", image: "vestido3.jpg", category:"Vestidos Femininos" }
+    ];
+
+    // --- Navegação ---
+    function updateNav(){
+      const hash = location.hash || "#/loja";
+      document.getElementById('linkLoja').classList.toggle('active', hash === "#/loja");
+      document.getElementById('linkAdmin').classList.toggle('active', hash === "#/admin");
+      document.getElementById('lojaSection').style.display = (hash === "#/loja") ? "" : "none";
+      document.getElementById('adminSection').style.display = (hash === "#/admin") ? "" : "none";
+    }
+    window.addEventListener('hashchange', updateNav);
+    updateNav();
+
+    // --- Carousel ---
+    (function carousel(){
+      const el = document.getElementById('carousel');
+      let idx = 0;
+      setInterval(()=>{
+        idx = (idx+1) % el.children.length;
+        el.scrollTo({ left: el.clientWidth * idx, behavior: 'smooth' });
+      }, 3000);
+    })();
+
+    // --- Renderização loja ---
+    const grid = document.getElementById('productsGrid');
+    function render(productsToShow){
+      grid.innerHTML = "";
+      productsToShow.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x400.png?text=Imagem+Indisponível'"/>
+          <div class="body">
+            <strong>${p.name}</strong>
+            <span class="muted">${p.category}</span>
+            <span class="price">R$ ${p.price}</span>
+            <button class="buy" onclick="comprar('${p.name}')">Comprar</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    render(products);
+
+    // --- Comprar via WhatsApp ---
+    function comprar(nome){
+      window.open('https://wa.me/5577981518721?text=' + 
+        encodeURIComponent("Olá, vim pelo site e quero fazer um pedido: " + nome), '_blank');
+    }
+
+    // --- Busca ---
+    const search = document.getElementById('search');
+    search.addEventListener('input', (e)=>{
+      const term = e.target.value.toLowerCase();
+      const filtered = products.filter(p => (p.name + " " + p.category).toLowerCase().includes(term));
+      render(filtered);
+    });
+
+    // --- Admin (senha e editor) ---
+    const PASS = "15390640";
+    const btnLogin = document.getElementById('btnLogin');
+    btnLogin.addEventListener('click', () => {
+      const v = document.getElementById('adminPass').value;
+      if(v === PASS){
+        document.getElementById('loginPanel').style.display = "none";
+        document.getElementById('editorPanel').style.display = "";
+        document.getElementById('jsonArea').value = JSON.stringify(products, null, 2);
+      }else{
+        alert("Senha incorreta!");
+      }
+    });
+
+    // Aplicar alterações
+    document.getElementById('btnAplicar').addEventListener('click', ()=>{
+      try{
+        const parsed = JSON.parse(document.getElementById('jsonArea').value);
+        if(!Array.isArray(parsed)) throw new Error("O JSON deve ser um array.");
+        products = parsed;
+        render(products);
+        alert("Alterações aplicadas.");
+      }catch(err){
+        alert("Erro no JSON: " + err.message);
+      }
+    });
+
+    // Baixar JSON
+    document.getElementById('btnBaixar').addEventListener('click', ()=>{
+      const blob = new Blob([document.getElementById('jsonArea').value], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = "products.json"; a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
