@@ -12,6 +12,7 @@
       --muted:#6b7280;
       --text:#1f2937;
       --accent:#a855f7;  /* Lilás */
+      --ring: rgba(236,72,153,.4);
     }
     *{box-sizing:border-box}
     body{
@@ -43,17 +44,22 @@
       box-shadow: 0 10px 40px rgba(0,0,0,.15);
     }
     .banner h2{margin:0 0 8px 0}
-    .carousel{display:flex; gap:10px; overflow:hidden}
+
+    /* Carousel */
+    .carousel{display:flex; gap:10px; overflow:hidden; scroll-behavior:smooth;}
     .slide{
       min-width:100%; background:#fff; border:1px solid rgba(0,0,0,.05);
       border-radius:14px; padding:18px; text-align:center;
     }
+
     /* Busca */
     .searchBar{display:flex; gap:10px; margin:16px 0}
     .searchBar input{
       width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
       background:#fff; color:var(--text);
     }
+    .searchBar input:focus{outline:3px solid var(--ring);}
+
     /* Grid produtos */
     .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px}
     .card{
@@ -69,6 +75,8 @@
     .buy{margin-top:6px; padding:10px 12px; border-radius:12px; border:0; cursor:pointer;
       background:linear-gradient(90deg, var(--primary), var(--accent)); color:white; font-weight:700;
     }
+    .buy:focus{outline:3px solid var(--ring);}
+
     /* Admin */
     .panel{background:#fff; border:1px solid rgba(0,0,0,.1); border-radius:16px; padding:16px; margin:16px 0}
     .field{display:flex; gap:10px; margin:8px 0}
@@ -76,10 +84,12 @@
       width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.1);
       background:#fff; color:var(--text);
     }
+    .field input:focus, .field textarea:focus{outline:3px solid var(--ring)}
     .btn{
       padding:10px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:700;
       background:var(--accent); color:white;
     }
+    .btn:focus{outline:3px solid var(--ring)}
     .muted{color:var(--muted); font-size:.92rem}
     footer{border-top:1px solid rgba(0,0,0,.05); margin-top:30px; background:#fff}
     .foot{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:16px}
@@ -96,7 +106,7 @@
   <header>
     <div class="wrap row">
       <div class="logo"><img src="logo.jpg" alt="Nalivia Store"> Nalivia Store</div>
-      <nav>
+      <nav aria-label="Seções do site">
         <a href="#/loja" id="linkLoja" class="active">Loja</a>
         <a href="#/admin" id="linkAdmin">Admin</a>
       </nav>
@@ -106,7 +116,7 @@
   <main class="wrap">
     <!-- LOJA -->
     <section id="lojaSection">
-      <div class="banner">
+      <div class="banner" aria-live="polite">
         <h2>Novidades em Moda Feminina ✨</h2>
         <p class="muted">Os vestidos mais lindos, direto da Nalivia Store.</p>
         <div class="carousel" id="carousel">
@@ -130,17 +140,17 @@
         <div class="field">
           <input type="password" id="adminPass" placeholder="Senha de admin" />
         </div>
-        <button class="btn" id="btnLogin">Entrar</button>
+        <button class="btn" id="btnLogin" type="button">Entrar</button>
       </div>
 
       <div class="panel" id="editorPanel" style="display:none;">
         <h3>Editor de Produtos (JSON)</h3>
         <div class="field">
-          <textarea id="jsonArea" rows="12"></textarea>
+          <textarea id="jsonArea" rows="12" spellcheck="false"></textarea>
         </div>
         <div class="field" style="gap:8px;">
-          <button class="btn" id="btnAplicar">Aplicar alterações</button>
-          <button class="btn" id="btnBaixar">Baixar products.json</button>
+          <button class="btn" id="btnAplicar" type="button">Aplicar alterações</button>
+          <button class="btn" id="btnBaixar" type="button">Baixar products.json</button>
         </div>
       </div>
     </section>
@@ -154,38 +164,60 @@
   </footer>
 
   <!-- Botão WhatsApp -->
-  <a class="whatsapp" href="https://wa.me/5577981518721?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20quero%20fazer%20um%20pedido" target="_blank">WhatsApp</a>
+  <a class="whatsapp" href="https://wa.me/5577981518721?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20quero%20fazer%20um%20pedido" target="_blank" rel="noopener noreferrer">WhatsApp</a>
 
   <script>
-    // --- Dados iniciais ---
+    // ======================
+    //   Dados iniciais
+    // ======================
+    const LS_KEY = 'nalivia_products';
     let products = [
       { name: "Vestido Vermelho Elegante", price: "179,90", image: "vestido1.jpg", category:"Vestidos Femininos" },
-      { name: "Vestido Floral Rosa", price: "189,90", image: "vestido2.jpg", category:"Vestidos Femininos" },
-      { name: "Vestido Verde Poá", price: "169,90", image: "vestido3.jpg", category:"Vestidos Femininos" }
+      { name: "Vestido Floral Rosa",     price: "189,90", image: "vestido2.jpg", category:"Vestidos Femininos" },
+      { name: "Vestido Verde Poá",       price: "169,90", image: "vestido3.jpg", category:"Vestidos Femininos" }
     ];
+    // Tenta carregar produtos salvos
+    try {
+      const saved = JSON.parse(localStorage.getItem(LS_KEY));
+      if (Array.isArray(saved) && saved.length) products = saved;
+    } catch {}
 
-    // --- Navegação ---
+    // ======================
+    //   Navegação simples
+    // ======================
     function updateNav(){
       const hash = location.hash || "#/loja";
       document.getElementById('linkLoja').classList.toggle('active', hash === "#/loja");
       document.getElementById('linkAdmin').classList.toggle('active', hash === "#/admin");
-      document.getElementById('lojaSection').style.display = (hash === "#/loja") ? "" : "none";
+      document.getElementById('lojaSection').style.display  = (hash === "#/loja")  ? "" : "none";
       document.getElementById('adminSection').style.display = (hash === "#/admin") ? "" : "none";
     }
     window.addEventListener('hashchange', updateNav);
     updateNav();
 
-    // --- Carousel ---
+    // ======================
+    //   Carousel robusto
+    // ======================
     (function carousel(){
       const el = document.getElementById('carousel');
+      if(!el) return;
       let idx = 0;
+      function go(i){
+        const child = el.children[i];
+        if(!child) return;
+        // Usa a posição real do slide para considerar o gap no cálculo
+        el.scrollTo({ left: child.offsetLeft, behavior: 'smooth' });
+      }
       setInterval(()=>{
         idx = (idx+1) % el.children.length;
-        el.scrollTo({ left: el.clientWidth * idx, behavior: 'smooth' });
+        go(idx);
       }, 3000);
+      window.addEventListener('resize', ()=>go(idx));
     })();
 
-    // --- Renderização loja ---
+    // ======================
+    //   Renderização da loja
+    // ======================
     const grid = document.getElementById('productsGrid');
     function render(productsToShow){
       grid.innerHTML = "";
@@ -193,12 +225,12 @@
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-          <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x400.png?text=Imagem+Indisponível'"/>
+          <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x400.png?text=Imagem+Indispon%C3%ADvel'"/>
           <div class="body">
             <strong>${p.name}</strong>
-            <span class="muted">${p.category}</span>
+            <span class="muted">${p.category || ''}</span>
             <span class="price">R$ ${p.price}</span>
-            <button class="buy" onclick="comprar('${p.name}')">Comprar</button>
+            <button class="buy" type="button" data-name="${p.name}">Comprar</button>
           </div>
         `;
         grid.appendChild(card);
@@ -206,22 +238,38 @@
     }
     render(products);
 
-    // --- Comprar via WhatsApp ---
+    // Delegação de evento para botões Comprar (evita problemas após re-render)
+    grid.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.buy');
+      if(!btn) return;
+      comprar(btn.dataset.name);
+    });
+
+    // ======================
+    //   Comprar via WhatsApp
+    // ======================
     function comprar(nome){
-      window.open('https://wa.me/5577981518721?text=' + 
-        encodeURIComponent("Olá, vim pelo site e quero fazer um pedido: " + nome), '_blank');
+      const url = 'https://wa.me/5577981518721?text=' + 
+        encodeURIComponent("Olá, vim pelo site e quero fazer um pedido: " + nome);
+      // Em alguns navegadores, window.open pode ser bloqueado; fallback para mesma aba
+      const win = window.open(url, '_blank');
+      if(!win){ location.href = url; }
     }
 
-    // --- Busca ---
+    // ======================
+    //   Busca
+    // ======================
     const search = document.getElementById('search');
     search.addEventListener('input', (e)=>{
-      const term = e.target.value.toLowerCase();
-      const filtered = products.filter(p => (p.name + " " + p.category).toLowerCase().includes(term));
+      const term = (e.target.value || '').toLowerCase();
+      const filtered = products.filter(p => (p.name + ' ' + (p.category||'')).toLowerCase().includes(term));
       render(filtered);
     });
 
-    // --- Admin (senha e editor) ---
-    const PASS = "15390640";
+    // ======================
+    //   Admin (senha e editor)
+    // ======================
+    const PASS = "15390640"; // OBS: Em site público, não há segurança real no front-end.
     const btnLogin = document.getElementById('btnLogin');
     btnLogin.addEventListener('click', () => {
       const v = document.getElementById('adminPass').value;
@@ -233,13 +281,27 @@
         alert("Senha incorreta!");
       }
     });
+    // Enter para logar
+    document.getElementById('adminPass').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') btnLogin.click();
+    });
 
     // Aplicar alterações
     document.getElementById('btnAplicar').addEventListener('click', ()=>{
       try{
-        const parsed = JSON.parse(document.getElementById('jsonArea').value);
+        const txt = document.getElementById('jsonArea').value.trim();
+        if(!txt) throw new Error('O editor está vazio.');
+        const parsed = JSON.parse(txt);
         if(!Array.isArray(parsed)) throw new Error("O JSON deve ser um array.");
+        // Validação simples dos itens
+        parsed.forEach((it, i)=>{
+          if(typeof it !== 'object') throw new Error(`Item ${i+1} não é um objeto.`);
+          ['name','price','image'].forEach(k=>{
+            if(!(k in it)) throw new Error(`Item ${i+1} está sem o campo '${k}'.`);
+          });
+        });
         products = parsed;
+        localStorage.setItem(LS_KEY, JSON.stringify(products));
         render(products);
         alert("Alterações aplicadas.");
       }catch(err){
@@ -247,12 +309,16 @@
       }
     });
 
-    // Baixar JSON
+    // Baixar JSON (compatível com mais navegadores)
     document.getElementById('btnBaixar').addEventListener('click', ()=>{
-      const blob = new Blob([document.getElementById('jsonArea').value], {type:'application/json'});
+      const content = document.getElementById('jsonArea').value || JSON.stringify(products, null, 2);
+      const blob = new Blob([content], {type:'application/json'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = "products.json"; a.click();
+      a.href = url; a.download = "products.json"; a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
       URL.revokeObjectURL(url);
     });
   </script>
